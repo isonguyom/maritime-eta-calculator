@@ -7,31 +7,28 @@ on:
     branches: [main]
 
 jobs:
-  lint-build-test:
+  dashboard:
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: apps/dashboard
-
     steps:
-      - name: Checkout repository
+      - name: Checkout repo
         uses: actions/checkout@v4
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: 20
+          node-version: 22
           cache: npm
 
-      # Install dependencies ONLY for dashboard
+      # IMPORTANT: install inside dashboard folder
       - name: Install dependencies
         run: npm install
+        working-directory: apps/dashboard
 
-      # Run linting
       - name: Run ESLint
         run: npm run lint
+        working-directory: apps/dashboard
 
-      # Run build check
       - name: Build Next.js app
         run: npm run build
+        working-directory: apps/dashboard
