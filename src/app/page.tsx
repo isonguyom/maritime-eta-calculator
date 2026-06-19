@@ -7,6 +7,7 @@ import ResultCard from "@/components/ResultCard";
 
 import { calculateETA } from "@/lib/calculateETA";
 import { ETAResult } from "@/types/eta";
+import VoyageSummary from "@/components/VoyageSummary";
 
 export default function Home() {
   const [distance, setDistance] = useState("");
@@ -29,33 +30,50 @@ export default function Home() {
   };
 
   return (
-    <main className="min-h-screen bg-slate-950 text-white flex items-center justify-center p-6">
-      <div className="w-full max-w-xl space-y-6">
-        <div>
-          <h1 className="text-4xl font-bold text-center">
-            Voyage ETA Planner
-          </h1>
+   <main className="min-h-screen bg-slate-950 text-white p-6">
+  <div className="max-w-5xl mx-auto space-y-8">
 
-          <p className="text-center text-slate-400 mt-2">
-            Estimate vessel arrival times using
-            distance and speed.
-          </p>
-        </div>
+    {/* Header */}
+    <div className="text-center space-y-2">
+      <h1 className="text-4xl font-bold">
+        Voyage ETA Planner
+      </h1>
+      <p className="text-slate-400">
+        Maritime decision support tool for voyage planning
+      </p>
+    </div>
 
-        <ETAForm
-          distance={distance}
-          speed={speed}
-          departure={departure}
-          onDistanceChange={setDistance}
-          onSpeedChange={setSpeed}
-          onDepartureChange={setDeparture}
-          onCalculate={handleCalculate}
-        />
+    {/* Dashboard Grid */}
+    <div className="grid md:grid-cols-2 gap-6 items-start">
 
+      {/* Form */}
+      <ETAForm
+        distance={distance}
+        speed={speed}
+        departure={departure}
+        onDistanceChange={setDistance}
+        onSpeedChange={setSpeed}
+        onDepartureChange={setDeparture}
+        onCalculate={handleCalculate}
+      />
+
+      {/* Results */}
+      <div className="space-y-4">
         {result && (
-          <ResultCard result={result} />
+          <>
+            <VoyageSummary
+              distance={Number(distance)}
+              speed={Number(speed)}
+              duration={result.durationHours}
+            />
+
+            <ResultCard result={result} />
+          </>
         )}
       </div>
-    </main>
+    </div>
+
+  </div>
+</main>
   );
 }
