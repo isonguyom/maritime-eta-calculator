@@ -1,4 +1,4 @@
-name: CI Pipeline
+name: Dashboard CI
 
 on:
   push:
@@ -7,11 +7,15 @@ on:
     branches: [main]
 
 jobs:
-  build:
+  lint-build-test:
     runs-on: ubuntu-latest
 
+    defaults:
+      run:
+        working-directory: apps/dashboard
+
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
       - name: Setup Node.js
@@ -20,11 +24,14 @@ jobs:
           node-version: 20
           cache: npm
 
+      # Install dependencies ONLY for dashboard
       - name: Install dependencies
         run: npm install
 
+      # Run linting
       - name: Run ESLint
         run: npm run lint
 
-      - name: Build project
+      # Run build check
+      - name: Build Next.js app
         run: npm run build
