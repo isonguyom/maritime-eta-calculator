@@ -114,11 +114,24 @@ section {
   font-size: 20px;
   color: var(--title);
   font-weight: 500;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  letter-spacing: -1px;
+}
+
+.brand:hover {
+  text-decoration: none;
+  color: var(--title);
 }
 
 .brand span {
-  color: var(--accent);
-  font-weight: 700;
+  font-weight: 600;
+}
+
+.brand-icon {
+  width: 40px;
+  height: 40px;
 }
 
 .nav ul {
