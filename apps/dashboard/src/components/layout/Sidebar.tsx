@@ -40,7 +40,7 @@ export default function Sidebar({
         )}
       >
         {/* HEADER */}
-        <div className="px-4 py-6 border-b border-border shrink-0 h-16 flex items-center gap-1">
+        <div className="px-4 py-5 border-b border-border shrink-0 h-16 flex items-center gap-1">
           <Image
             src="/assets/naviscope-icon.svg"
             alt="Naviscope icon"
@@ -53,7 +53,7 @@ export default function Sidebar({
         </div>
 
         {/* NAV (SCROLLABLE AREA) */}
-        <nav className="flex-1 overflow-y-auto px-4 py-6 space-y-2">
+        <nav className="flex-1 overflow-y-auto px-4 py-5 space-y-2">
           {navItems.map((item) => (
             <Link
               key={item.path}

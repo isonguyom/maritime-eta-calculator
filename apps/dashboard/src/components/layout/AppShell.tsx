@@ -13,7 +13,7 @@ export default function AppShell({ children }: { children: React.ReactNode }) {
 
       <div className="md:pl-64 flex flex-col">
         <Topbar onMenuClick={() => setOpen(!open)} />
-        <main className="p-6">{children}</main>
+        <main className="p-5">{children}</main>
       </div>
     </div>
   );
