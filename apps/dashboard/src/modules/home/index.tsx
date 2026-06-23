@@ -9,7 +9,7 @@ import { calculateETA } from '@/lib/calculateETA';
 import { ETAResult } from '@/types/eta';
 import VoyageSummary from '@/components/VoyageSummary';
 
-export default function HomePage() {
+export default function HomeModule() {
   const [distance, setDistance] = useState('');
   const [speed, setSpeed] = useState('');
   const [departure, setDeparture] = useState('');
