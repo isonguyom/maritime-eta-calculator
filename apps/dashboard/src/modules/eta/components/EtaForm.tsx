@@ -1,121 +1,136 @@
 'use client';
 
-import { useState } from 'react';
-import Button from '@/components/ui/form/Button';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+
+import FormProvider from '@/components/ui/form/FormProvider';
 import Input from '@/components/ui/form/Input';
 import Select from '@/components/ui/form/Select';
+import SubmitButton from '@/components/ui/form/SubmitButton';
+
+import { etaFormSchema, EtaFormSchemaType } from '@/lib/validations/eta';
 import type { EtaInputType } from '@/types/eta';
-import { etaSchema } from '@/lib/validations/eta';
+import { useState } from 'react';
+import type { ButtonState } from '@/components/ui/Button';
 
 type EtaFormProps = {
   onCalculate: (data: EtaInputType) => void;
 };
 
 const vessels = [
-  { label: 'Container Ship', value: 'container', speed: 20, fuelPerDay: 35 },
-  { label: 'Bulk Carrier', value: 'bulk', speed: 14, fuelPerDay: 22 },
-  { label: 'Oil Tanker', value: 'oil_tanker', speed: 15, fuelPerDay: 28 },
-  { label: 'General Cargo', value: 'general_cargo', speed: 13, fuelPerDay: 18 },
+  { label: 'Container Ship', value: 'container' },
+  { label: 'Bulk Carrier', value: 'bulk' },
+  { label: 'Oil Tanker', value: 'oil_tanker' },
+  { label: 'General Cargo', value: 'general_cargo' },
 ];
 
 export default function EtaForm({ onCalculate }: EtaFormProps) {
-  const [errors, setErrors] = useState<Record<string, string>>({});
+  const methods = useForm<EtaFormSchemaType>({
+    resolver: zodResolver(etaFormSchema),
+    mode: 'onChange',
+    defaultValues: {
+      vessel: '',
+      distance: '',
+      speed: '',
+      departure: '',
+    },
+  });
 
-  const vesselOptions = vessels.map((v) => ({
-    label: v.label,
-    value: v.value,
-  }));
+  const {
+    handleSubmit,
+    formState: { isSubmitting, isSubmitSuccessful, submitCount },
+  } = methods;
 
-  const handleSubmit = (formData: FormData) => {
-    const rawData = {
-      vessel: formData.get('vessel'),
-      distance: Number(formData.get('distance')),
-      speed: Number(formData.get('speed')),
-      departure: formData.get('departure'),
-    };
+  const [submitState, setSubmitState] = useState<ButtonState>('idle');
 
-    const result = etaSchema.safeParse(rawData);
+  const onSubmit = async (data: EtaFormSchemaType) => {
+    try {
+      setSubmitState('loading');
 
-    if (!result.success) {
-      const formattedErrors: Record<string, string> = {};
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
-      result.error.issues.forEach((err) => {
-        const field = err.path[0] as string;
-        formattedErrors[field] = err.message;
+      const vessel = vessels.find((v) => v.value === data.vessel);
+
+      if (!vessel) {
+        throw new Error('Invalid vessel');
+      }
+
+      onCalculate({
+        vessel: vessel.label,
+        distance: parseFloat(data.distance),
+        speed: parseFloat(data.speed),
+        departureDate: new Date(data.departure),
       });
 
-      setErrors(formattedErrors);
-      return;
+      setSubmitState('success');
+
+      setTimeout(() => {
+        setSubmitState('idle');
+      }, 3000);
+    } catch {
+      setSubmitState('error');
+
+      setTimeout(() => {
+        setSubmitState('idle');
+      }, 3000);
     }
-
-    setErrors({});
-
-    const vessel = vessels.find((v) => v.value === result.data.vessel);
-
-    if (!vessel) return;
-
-    const payload: EtaInputType = {
-      vessel: vessel.label,
-      distance: result.data.distance,
-      speed: result.data.speed,
-      departureDate: new Date(result.data.departure),
-    };
-
-    onCalculate(payload);
   };
 
   return (
-    <form
-      action={handleSubmit}
-      className="rounded-xl border border-border p-5 space-y-4 max-h-fit"
-    >
-      {/* Vessel */}
-      <Select
-        name="vessel"
-        label="Vessel Type"
-        options={vesselOptions}
-        placeholder="Select vessel type"
-        defaultValue=""
-        error={errors.vessel}
-      />
+    <FormProvider methods={methods}>
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        noValidate
+        className="rounded-xl border border-border p-5 space-y-4"
+      >
+        <Select
+          name="vessel"
+          label="Vessel Type"
+          placeholder="Select vessel type"
+          options={vessels}
+          required
+        />
 
-      {/* Distance */}
-      <Input
-        label="Distance"
-        tip="(NM)"
-        name="distance"
-        inputMode="decimal"
-        min={0}
-        placeholder="Enter distance in NM"
-        error={errors.distance}
-      />
+        <Input
+          name="distance"
+          label="Distance"
+          tip="(NM)"
+          inputMode="decimal"
+          numeric
+          placeholder="Enter distance in NM"
+          required
+        />
 
-      {/* Speed */}
-      <Input
-        label="Speed"
-        tip="(Knots)"
-        name="speed"
-        inputMode="decimal"
-        min={0}
-        placeholder="Enter speed in knots"
-        error={errors.speed}
-      />
+        <Input
+          name="speed"
+          label="Speed"
+          tip="(Knots)"
+          inputMode="decimal"
+          numeric
+          placeholder="Enter speed in knots"
+          required
+        />
 
-      {/* Departure */}
-      <Input
-        label="Departure Date & Time"
-        name="departure"
-        type="datetime-local"
-        placeholder="Enter Departure time"
-        error={errors.departure}
-      />
-      {errors.departure && (
-        <p className="text-sm text-red-400">{errors.departure}</p>
-      )}
+        <Input
+          name="departure"
+          label="Departure Date & Time"
+          type="datetime-local"
+          required
+        />
 
-      <Button type="submit" state="idle">
-        Calculate ETA
-      </Button>
-    </form>
+        <SubmitButton
+          state={submitState}
+          loadingText="Calculating ETA"
+          successText="ETA Ready"
+          errorText="Calculation Failed"
+        >
+          Calculate ETA
+        </SubmitButton>
+
+        {submitCount > 0 && !isSubmitting && isSubmitSuccessful && (
+          <p className="text-sm text-success">ETA calculated successfully.</p>
+        )}
+      </form>
+    </FormProvider>
   );
 }

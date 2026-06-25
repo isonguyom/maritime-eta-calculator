@@ -7,7 +7,7 @@ import React from 'react';
 type ButtonVariant = 'solid' | 'outline' | 'soft' | 'ghost';
 type ButtonIntent = 'primary' | 'success' | 'warning' | 'danger';
 type ButtonSize = 'sm' | 'md' | 'lg';
-type ButtonState = 'idle' | 'loading' | 'success' | 'error';
+export type ButtonState = 'idle' | 'loading' | 'success' | 'error';
 
 type ButtonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;

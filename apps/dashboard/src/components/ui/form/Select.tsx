@@ -2,6 +2,8 @@
 
 import React from 'react';
 import { ChevronDown } from 'lucide-react';
+import { get, useFormContext } from 'react-hook-form';
+
 import LoadingDots from '@/components/ui/feedback/LoadingDots';
 
 type SelectSize = 'sm' | 'md' | 'lg';
@@ -11,16 +13,25 @@ type SelectOptionType = {
   value: string;
 };
 
-type SelectProps = React.SelectHTMLAttributes<HTMLSelectElement> & {
+type SelectProps = Omit<
+  React.SelectHTMLAttributes<HTMLSelectElement>,
+  'size'
+> & {
+  name: string;
+
   label?: string;
   tip?: string;
   primaryTip?: boolean;
-  error?: string;
+
   placeholder?: string;
+
   options: SelectOptionType[];
+
   selectSize?: SelectSize;
+
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
+
   loading?: boolean;
 };
 
@@ -31,10 +42,10 @@ const sizes: Record<SelectSize, string> = {
 };
 
 export default function Select({
+  name,
   label,
   tip,
   primaryTip,
-  error,
   placeholder,
   options,
   selectSize = 'md',
@@ -45,7 +56,18 @@ export default function Select({
   className = '',
   ...props
 }: SelectProps) {
-  const selectId = id || props.name;
+  const {
+    register,
+    watch,
+    formState: { errors },
+  } = useFormContext();
+
+  const selectId = id || name;
+
+  const error = get(errors, name)?.message?.toString();
+
+  const value = watch(name, '');
+  const isPlaceholderSelected = value === '';
 
   const describedBy =
     [tip ? `${selectId}-tip` : null, error ? `${selectId}-error` : null]
@@ -74,32 +96,34 @@ export default function Select({
 
       <div className="relative">
         {leftIcon && (
-          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted">
+          <span className="absolute left-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none">
             {leftIcon}
           </span>
         )}
 
         <select
           id={selectId}
+          {...register(name)}
+          {...props}
+          disabled={loading || props.disabled}
+          aria-invalid={!!error}
+          aria-required={props.required}
+          aria-busy={loading}
+          aria-describedby={describedBy}
           className={[
             'w-full rounded-lg border border-border bg-surface-2 outline-none appearance-none',
             'focus:border-accent focus:ring-1 focus:ring-accent',
             'disabled:opacity-50 disabled:cursor-not-allowed',
-            'text-foreground',
-            'has-[option[value=""]:checked]:text-muted/70',
+            isPlaceholderSelected ? 'text-muted/70' : 'text-foreground',
             error ? 'border-danger focus:border-danger focus:ring-danger' : '',
             leftIcon ? 'pl-10' : '',
             'pr-10',
             sizes[selectSize],
             className,
           ].join(' ')}
-          aria-invalid={!!error}
-          aria-describedby={describedBy}
-          disabled={loading || props.disabled}
-          {...props}
         >
           {placeholder && (
-            <option value="" disabled>
+            <option value="" disabled hidden>
               {placeholder}
             </option>
           )}
@@ -115,7 +139,6 @@ export default function Select({
           ))}
         </select>
 
-        {/* RIGHT SLOT (always consistent positioning) */}
         <span className="absolute right-3 top-1/2 -translate-y-1/2 text-muted pointer-events-none">
           {loading ? (
             <LoadingDots />
@@ -130,8 +153,8 @@ export default function Select({
       {error && (
         <p
           id={`${selectId}-error`}
-          className="text-xs text-danger"
           role="alert"
+          className="text-xs text-danger"
         >
           {error}
         </p>

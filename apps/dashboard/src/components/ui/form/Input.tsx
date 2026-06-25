@@ -1,17 +1,19 @@
 'use client';
 
-import React, { useState } from 'react';
+import React from 'react';
+import { useFormContext } from 'react-hook-form';
 
 type InputSize = 'sm' | 'md' | 'lg';
 
-type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
+type InputProps = Omit<React.InputHTMLAttributes<HTMLInputElement>, 'name'> & {
+  name: string;
   label?: string;
   tip?: string;
   primaryTip?: boolean;
-  error?: string;
   leftIcon?: React.ReactNode;
   rightIcon?: React.ReactNode;
   inputSize?: InputSize;
+  numeric?: boolean;
 };
 
 const sizes: Record<InputSize, string> = {
@@ -21,27 +23,44 @@ const sizes: Record<InputSize, string> = {
 };
 
 export default function Input({
+  name,
   label,
   tip,
   primaryTip,
-  error,
   leftIcon,
   rightIcon,
   inputSize = 'md',
   id,
   className = '',
+  numeric,
   ...props
 }: InputProps) {
-  const inputId = id || props.name;
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext();
 
-  const [value, setValue] = useState('');
+  const inputId = id || name;
+
+  const error =
+    typeof errors[name]?.message === 'string'
+      ? errors[name]?.message
+      : undefined;
 
   const describedBy =
     [tip ? `${inputId}-tip` : null, error ? `${inputId}-error` : null]
       .filter(Boolean)
       .join(' ') || undefined;
 
-  const isEmpty = value === '';
+  const handleInput = (e: React.FormEvent<HTMLInputElement>) => {
+    if (!numeric) return;
+
+    const target = e.currentTarget;
+
+    target.value = target.value
+      .replace(/[^\d.]/g, '')
+      .replace(/(\..*)\./g, '$1');
+  };
   return (
     <div className="space-y-2 w-full">
       {label && (
@@ -71,22 +90,23 @@ export default function Input({
 
         <input
           id={inputId}
+          aria-invalid={!!error}
+          aria-describedby={describedBy}
           className={[
-            'w-full rounded-lg border border-border bg-surface-2 placeholder:text-muted/70 outline-none',
+            'w-full rounded-lg border border-border bg-surface-2 text-foreground',
+            'placeholder:text-muted/70',
+            'outline-none',
             'focus:border-accent focus:ring-1 focus:ring-accent',
             'disabled:opacity-50 disabled:cursor-not-allowed',
-            isEmpty ? 'text-muted/70' : 'text-foreground',
             error ? 'border-danger focus:border-danger focus:ring-danger' : '',
             leftIcon ? 'pl-10' : '',
             rightIcon ? 'pr-10' : '',
             sizes[inputSize],
             className,
           ].join(' ')}
-          aria-invalid={!!error}
-          aria-describedby={describedBy}
+          {...register(name)}
           {...props}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
+          onInput={handleInput}
         />
 
         {rightIcon && (
@@ -97,7 +117,7 @@ export default function Input({
       </div>
 
       {error && (
-        <p id={`${inputId}-error`} className="text-xs text-danger" role="alert">
+        <p id={`${inputId}-error`} role="alert" className="text-xs text-danger">
           {error}
         </p>
       )}

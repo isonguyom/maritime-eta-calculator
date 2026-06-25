@@ -1,13 +1,16 @@
 import { z } from 'zod';
 
-export const etaSchema = z.object({
-  vessel: z.string().min(1, 'Please select a vessel type'),
+const numericString = z
+  .string()
+  .trim()
+  .min(1, 'This field is required')
+  .refine((value) => !Number.isNaN(Number(value)), 'Must be a valid number');
 
-  distance: z.coerce.number().positive('Distance must be greater than 0'),
-
-  speed: z.coerce.number().positive('Speed must be greater than 0'),
-
+export const etaFormSchema = z.object({
+  vessel: z.string().min(1, 'Select a vessel'),
+  distance: numericString,
+  speed: numericString,
   departure: z.string().min(1, 'Departure date is required'),
 });
 
-export type EtaSchemaType = z.infer<typeof etaSchema>;
+export type EtaFormSchemaType = z.infer<typeof etaFormSchema>;
