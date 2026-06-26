@@ -17,9 +17,23 @@ export default function Sidebar({
   const navItems = [
     { name: 'Overview', path: '/' },
     { name: 'ETA Calculator', path: '/eta' },
-    { name: 'Fuel Estimator', path: '/fuel' },
-    { name: 'Voyage Planner', path: '/planner' },
+    { name: 'Fuel Estimator', path: '/fuel-estimator' },
+    { name: 'Voyage Planner', path: '/voyage-planner' },
   ];
+
+  //   Voyage Planning
+  // ETA Calculator
+  // Voyage Planner
+  // Speed Optimization
+  // Route Comparison
+  // Fuel & Environment
+  // Fuel Estimator
+  // Carbon Emissions Calculator
+  // Bunker Cost Optimizer
+  // Operations
+  // Port Stay Calculator
+  // Laytime Calculator
+  // Fleet Dashboard
 
   return (
     <>

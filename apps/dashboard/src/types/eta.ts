@@ -1,8 +1,3 @@
-export interface ETAResult {
-  durationHours: number;
-  eta: Date;
-}
-
 export type EtaInputType = {
   vessel: string;
   distance: number;

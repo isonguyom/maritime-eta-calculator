@@ -25,7 +25,7 @@ export function downloadSummary({ title, filename, items }: DownloadOptions) {
   items.forEach(({ label, value }) => {
     // Label
     pdf.setFont('helvetica', 'bold');
-    pdf.text(`${label}:`, 20, y);
+    pdf.text(`${label}: `, 20, y);
 
     // Value
     pdf.setFont('helvetica', 'normal');

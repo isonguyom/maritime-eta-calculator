@@ -10,17 +10,24 @@ import SubmitButton from '@/components/ui/form/SubmitButton';
 
 import {
   fuelEstimatorSchema,
-  FuelEstimatorSchemaType,
+  type FuelEstimatorSchemaType,
 } from '@/lib/validations/fuelEstimator';
 
 import useButtonState from '@/hooks/useButtonState';
-import { vessels } from '@/lib/data';
+import { FuelEstimatorInputType } from '@/types/fuelEstimator';
 
 type Props = {
-  onEstimate: (values: FuelEstimatorSchemaType) => void;
+  onCalculate: (data: FuelEstimatorInputType) => void;
 };
 
-export default function FuelEstimatorForm({ onEstimate }: Props) {
+const vessels = [
+  { label: 'Container Ship', value: 'container' },
+  { label: 'Bulk Carrier', value: 'bulk' },
+  { label: 'Oil Tanker', value: 'oil_tanker' },
+  { label: 'General Cargo', value: 'general_cargo' },
+];
+
+export default function FuelEstimatorForm({ onCalculate }: Props) {
   const methods = useForm<FuelEstimatorSchemaType>({
     resolver: zodResolver(fuelEstimatorSchema),
     mode: 'onChange',
@@ -28,32 +35,45 @@ export default function FuelEstimatorForm({ onEstimate }: Props) {
       vessel: '',
       distance: '',
       speed: '',
-      fuelConsumption: '',
       fuelPrice: '',
-      weatherFactor: 'calm',
-      safetyMargin: '5',
     },
   });
 
+  const { handleSubmit } = methods;
+
   const { state, setLoading, setSuccess, setError } = useButtonState();
 
-  const submit = methods.handleSubmit(async (data: FuelEstimatorSchemaType) => {
+  const onSubmit = async (data: FuelEstimatorSchemaType) => {
     try {
       setLoading();
 
-      await new Promise((r) => setTimeout(r, 1500));
+      await new Promise((resolve) => setTimeout(resolve, 1500));
 
-      onEstimate(data);
+      const vessel = vessels.find((v) => v.value === data.vessel);
+
+      if (!vessel) {
+        throw new Error();
+      }
+      onCalculate({
+        vessel: vessel.value,
+        distance: parseFloat(data.distance),
+        speed: parseFloat(data.speed),
+        fuelPrice: parseFloat(data.fuelPrice),
+      });
 
       setSuccess();
     } catch {
       setError();
     }
-  });
+  };
 
   return (
     <FormProvider methods={methods}>
-      <form onSubmit={submit} className="space-y-4">
+      <form
+        onSubmit={handleSubmit(onSubmit)}
+        className="rounded-xl border border-border p-5 space-y-4 max-h-fit"
+        noValidate
+      >
         <Select
           name="vessel"
           label="Vessel Type"
@@ -66,74 +86,37 @@ export default function FuelEstimatorForm({ onEstimate }: Props) {
           name="distance"
           label="Distance"
           tip="(NM)"
-          numeric
+          placeholder="Enter distance"
           inputMode="decimal"
-          placeholder="Distance"
+          numeric
           required
         />
 
         <Input
           name="speed"
-          label="Average Speed"
+          label="Speed"
           tip="(Knots)"
-          numeric
+          placeholder="Enter speed"
           inputMode="decimal"
-          placeholder="Speed"
-          required
-        />
-
-        <Input
-          name="fuelConsumption"
-          label="Fuel Consumption"
-          tip="(t/day)"
           numeric
-          inputMode="decimal"
-          placeholder="Fuel consumption"
           required
         />
 
         <Input
           name="fuelPrice"
           label="Fuel Price"
-          tip="($/ton)"
-          numeric
+          tip="(USD/MT)"
+          placeholder="Fuel price"
           inputMode="decimal"
-          placeholder="Optional"
-        />
-
-        <Select
-          name="weatherFactor"
-          label="Weather"
-          options={[
-            {
-              label: 'Calm',
-              value: 'calm',
-            },
-            {
-              label: 'Moderate',
-              value: 'moderate',
-            },
-            {
-              label: 'Rough',
-              value: 'rough',
-            },
-          ]}
-        />
-
-        <Input
-          name="safetyMargin"
-          label="Safety Margin"
-          tip="%"
           numeric
-          inputMode="decimal"
           required
         />
 
         <SubmitButton
           state={state}
-          loadingText="Estimating Fuel"
-          successText="Estimate Ready"
-          errorText="Calculation Failed"
+          loadingText="Estimating"
+          successText="Completed"
+          errorText="Failed"
         >
           Estimate Fuel
         </SubmitButton>

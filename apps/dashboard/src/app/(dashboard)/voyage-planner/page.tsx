@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import PlannerPage from '@/modules/planner';
+import VoyagePlannerPage from '@/modules/voyage-planner';
 
 export const metadata: Metadata = {
   title: 'Voyage Planner | Naviscope ETA',
@@ -18,5 +18,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <PlannerPage />;
+  return <VoyagePlannerPage />;
 }

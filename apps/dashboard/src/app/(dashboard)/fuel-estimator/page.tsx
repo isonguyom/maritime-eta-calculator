@@ -1,5 +1,5 @@
 import type { Metadata } from 'next';
-import FuelPage from '@/modules/fuel';
+import FuelEstimatorPage from '@/modules/fuel-estimator';
 
 export const metadata: Metadata = {
   title: 'Fuel Estimator | Naviscope ETA',
@@ -16,5 +16,5 @@ export const metadata: Metadata = {
 };
 
 export default function Page() {
-  return <FuelPage />;
+  return <FuelEstimatorPage />;
 }

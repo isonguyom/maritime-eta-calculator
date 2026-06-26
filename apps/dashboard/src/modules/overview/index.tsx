@@ -1,61 +1,77 @@
 'use client';
 
+import { ShipWheel, Clock3, Fuel, Route } from 'lucide-react';
+
 import DashboardPageHeader from '@/components/layout/DashboardPageHeader';
-import { Clock, Fuel, Anchor } from 'lucide-react';
+import FeatureCard from '@/components/cards/FeatureCard';
+
+const tools = [
+  {
+    title: 'ETA Calculator',
+    description:
+      'Estimate vessel arrival time, voyage duration, and fuel consumption from voyage parameters.',
+    icon: Clock3,
+    href: '/eta',
+  },
+  {
+    title: 'Fuel Estimator',
+    description:
+      'Estimate fuel usage, operating cost, CO₂ emissions, and fuel efficiency.',
+    icon: Fuel,
+    href: '/fuel-estimator',
+  },
+  {
+    title: 'Voyage Planner',
+    description:
+      'Plan an entire voyage including ETA, fuel requirements, costs, and environmental impact.',
+    icon: Route,
+    href: '/voyage-planner',
+  },
+];
 
 export default function OverviewPage() {
   return (
     <div className="space-y-8">
       <DashboardPageHeader
         title="Overview"
-        description="Simple maritime tools for estimating ETA, fuel usage, and voyage planning."
+        description="A maritime voyage planning toolkit for ETA prediction, fuel estimation, and voyage optimization."
       />
 
-      {/* Core Tools */}
-      <div className="grid gap-4 md:grid-cols-3">
-        <div className="rounded-xl border border-border bg-surface p-5">
-          <div className="flex items-center gap-2 text-accent">
-            <Clock size={18} />
-            <span className="text-sm font-medium">ETA Calculator</span>
+      <section className="rounded-xl border border-border bg-surface p-8">
+        <div className="flex items-center gap-4">
+          <div className="flex h-14 w-14 items-center justify-center rounded-full bg-accent/10 text-accent">
+            <ShipWheel size={28} />
           </div>
-          <p className="mt-2 text-sm text-muted">
-            Estimate vessel arrival time using distance, speed, and departure
-            time.
-          </p>
-        </div>
 
-        <div className="rounded-xl border border-border bg-surface p-5">
-          <div className="flex items-center gap-2 text-accent">
-            <Fuel size={18} />
-            <span className="text-sm font-medium">Fuel Estimator</span>
+          <div className="flex-1">
+            <h2 className="text-xl font-semibold text-foreground">
+              Welcome to Naviscope ETA
+            </h2>
+
+            <p className="mt-1 text-sm text-muted">
+              Quickly estimate voyage arrival time, fuel consumption,
+              operational costs, and environmental impact using maritime
+              planning tools designed for shipping professionals.
+            </p>
           </div>
-          <p className="mt-2 text-sm text-muted">
-            Calculate estimated fuel consumption based on vessel type and voyage
-            duration.
-          </p>
         </div>
+      </section>
 
-        <div className="rounded-xl border border-border bg-surface p-5">
-          <div className="flex items-center gap-2 text-accent">
-            <Anchor size={18} />
-            <span className="text-sm font-medium">Voyage Planner</span>
-          </div>
-          <p className="mt-2 text-sm text-muted">
-            Plan basic voyage routes and estimate travel duration and
-            operational needs.
-          </p>
+      <section>
+        <h2 className="mb-4 text-lg font-semibold">Available Tools</h2>
+
+        <div className="grid gap-5 md:grid-cols-2 xl:grid-cols-3">
+          {tools.map((tool) => (
+            <FeatureCard
+              key={tool.title}
+              title={tool.title}
+              description={tool.description}
+              icon={tool.icon}
+              href={tool.href}
+            />
+          ))}
         </div>
-      </div>
-
-      {/* Simple Description */}
-      <div className="rounded-xl border border-border p-5 space-y-2">
-        <h2 className="text-base font-semibold">About Naviscope</h2>
-
-        <p className="text-sm text-muted">
-          Naviscope is a lightweight maritime utility tool designed to help with
-          everyday voyage calculations and planning tasks.
-        </p>
-      </div>
+      </section>
     </div>
   );
 }

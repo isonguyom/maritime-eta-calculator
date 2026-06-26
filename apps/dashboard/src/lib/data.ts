@@ -2,18 +2,22 @@ export const vessels = [
   {
     label: 'Container Ship',
     value: 'container',
+    fuelPerDay: 35,
   },
   {
     label: 'Bulk Carrier',
     value: 'bulk',
+    fuelPerDay: 22,
   },
   {
     label: 'Oil Tanker',
     value: 'oil_tanker',
+    fuelPerDay: 28,
   },
   {
     label: 'General Cargo',
     value: 'general_cargo',
+    fuelPerDay: 18,
   },
 ];
 
