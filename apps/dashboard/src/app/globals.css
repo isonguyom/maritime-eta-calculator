@@ -1,6 +1,7 @@
 @import 'tailwindcss';
 
-:root {
+:root,
+:root.light {
   /* NAVISCOPE BRAND (STEEL BLUE SYSTEM) */
   --accent: #5e95be;
 
@@ -17,7 +18,8 @@
   --warning: #e19f42;
   --danger: #ef4444;
 
-  --text-muted: #475569;
+  --text-muted: #627ca3;
+  --text-title: #0f172a;
 
   --font-inter:
     inter system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
@@ -48,6 +50,25 @@
   }
 }
 
+:root.dark {
+  --accent: #5e95be;
+
+  --background: #050816;
+  --foreground: #8a96a8;
+
+  --surface: rgba(17, 26, 51, 0.65);
+  --surface-2: #0a1026;
+
+  --border: rgba(148, 163, 184, 0.12);
+
+  --success: #22c55e;
+  --warning: #f8c008;
+  --danger: #f87171;
+
+  --text-muted: #55647a;
+  --text-title: #e5e7eb;
+}
+
 @theme inline {
   --color-background: var(--background);
   --color-foreground: var(--foreground);
@@ -68,10 +89,25 @@
   --font-mono: var(--font-mono);
 }
 
+html,
 body {
   background: var(--background);
   color: var(--foreground);
   font-family: var(--font-inter);
+}
+
+html {
+  transition:
+    background-color 0.2s ease,
+    color 0.2s ease;
+}
+
+body,
+* {
+  transition:
+    background-color 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
 }
 
 code,
@@ -107,6 +143,7 @@ code,
     transform: scale(0.6);
     opacity: 0.4;
   }
+
   40% {
     transform: scale(1);
     opacity: 1;
